@@ -1,0 +1,11 @@
+fastapi
+sqlmodel
+uvicorn
+faker
+passlib[bcrypt]
+pydantic[email]
+python-multipart
+python-jose[cryptography]
+python-dotenv
+pytest
+httpx
