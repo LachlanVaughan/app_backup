@@ -1,7 +1,32 @@
 @echo off
 
+REM Change to the frontend directory
+cd frontend
+
+REM Check if Node.js is installed
+where node
+if %errorlevel% neq 0 (
+    echo Node.js is not installed
+    exit /b 1
+)
+
+REM Install frontend dependencies if package.json exists
+if exist "package.json" (
+    echo Installing frontend dependencies
+    call npm install
+    if %errorlevel% neq 0 (
+        echo Failed to install frontend dependencies
+        exit /b 1
+    )
+)
+
+REM Start the frontend development server
+echo Starting frontend development server
+start "Frontend Server" cmd /k "npm run start"
+
+
 REM Change to the backend directory
-cd backend
+cd ../backend
 
 REM Check for a virtual environment
 if exist "venv" (
@@ -9,6 +34,7 @@ if exist "venv" (
     call venv\Scripts\activate.bat
 ) else (
     echo No virtual environment found
+)
 
 REM Check if Python is installed
 where python
@@ -30,39 +56,13 @@ if exist "requirements.txt" (
 REM Change to the app directory
 cd app
 
-REM Check if Uvicorn is installed
-where uvicorn
-
 REM Start the backend server
-echo Starting backend server...
+echo Starting backend server
 start "Backend Server" cmd /c "
+    where uvicorn
     if %errorlevel% equ 0 (
         uvicorn main:app --reload --host 0.0.0.0
     ) else (
         python -m uvicorn main:app --reload --host 0.0.0.0
     )
 "
-
-REM Change to the frontend directory
-cd ../../frontend
-
-REM Check if Node.js is installed
-where node
-if %errorlevel% neq 0 (
-    echo Node.js is not installed
-    exit /b 1
-)
-
-REM Install frontend dependencies if package.json exists
-if exist "package.json" (
-    echo Installing frontend dependencies
-    call npm install
-    if %errorlevel% neq 0 (
-        echo Failed to install frontend dependencies
-        exit /b 1
-    )
-)
-
-REM Start the frontend development server
-echo Starting frontend development server
-start "Frontend Server" cmd /c "npm run start"
