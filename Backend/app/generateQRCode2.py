@@ -69,7 +69,22 @@ class QRCodeData(BaseModel):
     merchant: str
     ABN: int
     price: float
+    expireTime: datetime
 
 @router.post("/validate_qr")
 async def validate_qr(qr_code_data: QRCodeData):
+  required_fields = ["merchant", "ABN", "price", "expireTime"]
+  missing_fields = [
+     field for field in required_fields 
+     if field not in qr_code_data]
+  if missing_fields:
+    raise ValueError(f"Missing required fields: {', '.join(missing_fields)}")
+
+  try:
+    expire_time = datetime.fromtimestamp(qr_code_data["expireTime"] / 1000)  
+  except (TypeError, ValueError):
+    raise ValueError("Invalid expireTime format.")
+
+  if expire_time < datetime.now():
+    raise Exception("QR code has expired.")
   return qr_code_data

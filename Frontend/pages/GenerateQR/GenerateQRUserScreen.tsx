@@ -15,6 +15,7 @@ function GenerateQRScreen() {
       merchant: 'ShopA',
       ABN: 123,
       price: 40,
+      expireTime: Date.now() + (1000 * 60 * 60) //1hr after now
     };
 
     try {
