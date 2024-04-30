@@ -4,7 +4,7 @@ from database import get_db_session, init_db
 from dataloader import generate_dummy_data, insert_dummy_data
 from fastapi import FastAPI
 from routes import auth_route, test_protected_route
-
+import generateQRCode2
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -40,3 +40,4 @@ app = FastAPI(lifespan=lifespan)
 # Include the routes/endpoints for the app
 app.include_router(auth_route.router)
 app.include_router(test_protected_route.router)
+app.include_router(generateQRCode2.router)
