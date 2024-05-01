@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Alert } from 'react-native';
 
 const API_BASE_URL = `http://${process.env.LOCAL_IP}:8000`;
-const WS_BASE_URL = `ws://${process.env.LOCAL_IP}:8000`;
+const WS_BASE_URL = `ws://${process.env.LOCAL_IP}:8001`;
 
 export const loginUser = async (email: string, password: string) => {
   try {

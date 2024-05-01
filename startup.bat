@@ -36,9 +36,9 @@ echo Starting backend server
 cd app
 where uvicorn
 if %errorlevel% equ 0 (
-    start "Backend Server" cmd /k "uvicorn main:app --reload --host 0.0.0.0"
+    start /min "Backend Server" cmd /k "uvicorn main:app --reload --host 0.0.0.0"
 ) else (
-    start "Backend Server" cmd /k "python -m uvicorn main:app --reload --host 0.0.0.0"
+    start /min "Backend Server" cmd /k "python -m uvicorn main:app --reload --host 0.0.0.0"
 )
 
 
@@ -65,8 +65,47 @@ if exist "package.json" (
 
 REM Start the frontend
 echo Starting frontend development server
-start "Frontend Server" cmd /c "npm run start"
+start "Frontend Server" cmd /k "npm run start"
 
 
-REM ### POS ###
-REM todo
+REM ### POS Server ###
+
+set /p StartPOS="Do you want to start the POS system? (y/n): "
+if /I "%StartPOS%"=="y" (
+    cd ../MockPOS/app
+
+    REM Install POS server dependencies if requirements.txt exists
+    if exist "requirements.txt" (
+        echo Installing POS server dependencies from requirements.txt
+        pip install -r requirements.txt
+        if %errorlevel% neq 0 (
+            echo Failed to install POS server dependencies
+            exit /b 1
+        )
+    )
+
+    REM Start the backend
+    echo Starting POS server
+    where uvicorn
+    if %errorlevel% equ 0 (
+        start /min "POS Server" cmd /k "uvicorn server:app --reload --host 0.0.0.0 --port 8001"
+    ) else (
+        start /min "POS Server" cmd /k "python -m uvicorn server:app --reload --host 0.0.0.0 --port 8001"
+    )
+
+    REM ### POS INTERFACE ###
+
+    cd ../interface
+    if exist "package.json" (
+        echo Installing POS interface dependencies
+        call npm install
+    )
+
+    echo Building POS interface
+    call npm run build
+
+    echo Running POS interface
+    call node dist/cli
+) else (
+    echo POS system startup skipped
+)
